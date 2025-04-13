@@ -5,7 +5,7 @@
         <ProfileMenuCard v-if="is_head" headText="Данные компании"
             bodyText="Просмотр и редактирование данных вашей компании" link="company-info" />
         <ProfileMenuCard v-if="is_head" headText="Добавить сотрудника" bodyText="Добавляйте сотрудников в свою компанию"
-            :link="'/register/' + this.$store.state.worker.company.id" />
+            :to="'/register/' + this.$store.state.worker.company.id" />
 
         <ProfileMenuCard headText="Ваши учетные данные"
             bodyText="Просмотр и редактирование данных вашего профиля пользователя" link="profile" />

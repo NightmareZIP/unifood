@@ -7,14 +7,14 @@
         </div>
         <div class="pl-5 pr-5">
             <button @click="newMenu()" v-if="can_add"
-                class="bg-orange-500 hover:bg-orange-700 text-white font-bold text-3xl py-4 px-6 mt-10 rounded-full">
+                class="bg-amber-600 hover:bg-orange-700 text-white font-bold text-3xl py-4 px-6 mt-10 rounded-full">
                 +
             </button>
             <div class="flex flex-wrap justify-left mt-10">
-                <MenuCard @click="showDetail(item.id)" v-for="(item, index) in menu_data" :headText="item.name"
-                    :address="item.address" :image="item.image" />
+                <MenuCard @open="showDetail(item.id)" v-for="(item, index) in menu_data" :headText="item.name"
+                    :address="item.address" :image="item.image" :id="item.id" />
             </div>
-            <MenuPopup v-if="showPopup" @close="close()" :menu_data="menu_info" />
+            <MenuPopup v-if="showPopup" @close="close()" :menu_data="menu_info" :is_new="is_new" />
         </div>
     </div>
 </template>
@@ -37,6 +37,7 @@ export default {
             menu_data: [],
             showPopup: false,
             menu_info: {},
+            is_new: true,
         }
     },
     mounted() {
@@ -125,6 +126,7 @@ export default {
                 logo: "",
 
             }
+            this.is_new = true
             this.showPopup = true
 
         },
@@ -133,8 +135,8 @@ export default {
 
             let copy_menu = [...this.menu_data]
             let menu = copy_menu.filter(e => e.id == id)[0]
-            menu.is_new = false
             this.menu_info = menu
+            this.is_new = false
             this.showPopup = true
 
         },
