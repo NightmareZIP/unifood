@@ -12,7 +12,7 @@ import Profile from '../views/Profile.vue'
 import CompanyInfo from '../views/CompanyInfo.vue'
 import Workers from '../views/Workers.vue'
 import ProfileMenu from '../views/ProfileMenu.vue'
-// import { params } from 'stylus/lib/utils'
+// import { props } from 'stylus/lib/utils'
 
 // Объявление объекта роутера
 const routes = [
@@ -49,11 +49,18 @@ const routes = [
     component: Tarifs
   },
   {
-    path: '/menu/:id',
+    path: '/menu-items/:menu_id',
     name: 'menu-id',
     meta: { requiresAuth: true },
     component: MenuDetail,
-    params: { orderMode: false }
+    props: { orderMode: false }
+  },
+  {
+    path: '/order-menu-items/:menu_id',
+    name: 'order-menu-items-id',
+    meta: { requiresAuth: false },
+    component: MenuDetail,
+    props: { orderMode: true }
   },
   {
     path: '/menu/',
@@ -66,7 +73,7 @@ const routes = [
     path: '/order-menu/:id',
     name: 'order-menu-id',
     meta: { requiresAuth: false },
-    params: { orderMode: true },
+    props: { orderMode: true },
     component: MenuDetail,
   },
 
@@ -108,13 +115,5 @@ const router = createRouter({
   routes
 })
 
-//Пероверка, требуется ли авторизация для просмотра страницы
-router.beforeEach((to, from) => {
-  if (to.meta.requireLogin && !store.state.isAuthenticated) {
-    return {
-      path: '/login',
-      query: { redirect: to.fullPath },
-    }
-  }
-})
+
 export default router

@@ -7,9 +7,7 @@ export default createStore({
       id: '',
       username: '',
     },
-    //Признак авторизации
     isAuthenticated: false,
-    //Токе
     token: '',
   },
   getters: {

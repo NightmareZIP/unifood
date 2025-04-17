@@ -36,8 +36,6 @@ class CompanyBase(viewsets.GenericViewSet):
         cmp_head = worker.is_head
 
         cmp_id = int(self.request.parser_context['kwargs']['pk'])
-        print([cmp_head, worker.company.id, cmp_id])
-
         if not cmp_head or worker.company.id != cmp_id:
             raise PermissionDenied('Wrong object owner')
             

@@ -31,7 +31,7 @@ class Orders(models.Model):
     owner_comment = models.TextField(blank=True, null=True, verbose_name="Комментарий покупателя")
     total_cost = models.DecimalField(max_digits=10, decimal_places=2)
     items = models.ManyToManyField(MenuItem, through="OrdersItems")
-    
+
     def __str__(self):
         """_summary_
 
@@ -54,6 +54,7 @@ class OrdersItems(models.Model):
     order = models.ForeignKey(Orders, on_delete=models.CASCADE, null=False, verbose_name="Заказ")
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, null=False, verbose_name="Пункт меню")
     amount = models.IntegerField(default=1, verbose_name="Количество")
+    price = models.DecimalField(max_digits=10, decimal_places=2)
   
    
     def __str__(self):

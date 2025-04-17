@@ -8,15 +8,6 @@
       </div>
       <div><a href="/"><img class="size-20" src="./assets/unifood.png" alt="unifood"></a></div>
     </div>
-    <div class="block lg:hidden">
-      <button
-        class="flex items-center px-3 py-2 border rounded text-border-red-50 border-red-50 hover:text-white hover:border-white">
-        <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <title>Меню</title>
-          <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-        </svg>
-      </button>
-    </div>
     <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
       <div class="text-xl lg:flex-grow lg:justify-center lg:flex">
 
@@ -24,13 +15,10 @@
             компанию</router-link></span>
         <span class="navbar"><router-link to="/menu" v-if=$store.state.isAuthenticated>Меню</router-link></span>
         <span class="navbar"><router-link to="/orders" v-if=$store.state.isAuthenticated>Заказы</router-link></span>
-
+        <span class="navbar"><router-link to="/my-profile">Моя компания</router-link
+            v-if=$store.state.isAuthenticated></span>
       </div>
       <div>
-        <span
-          class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-red-50 hover:bg-white mt-4 lg:mt-0"><router-link
-            to="/my-profile" v-if=$store.state.isAuthenticated>Моя
-            компания</router-link></span>
 
         <span class="navbar"><router-link id='logout' @click="logout" to=''
             v-if=$store.state.isAuthenticated>Выйти</router-link></span>
@@ -70,6 +58,7 @@ export default {
         .catch(error => {
           console.log(error)
         })
+
     } else {
       axios.defaults.headers.common['Authorization'] = ""
     }

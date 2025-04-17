@@ -10,7 +10,7 @@
                 class="bg-amber-600 hover:bg-orange-700 text-white font-bold text-3xl py-4 px-6 mt-10 rounded-full">
                 +
             </button>
-            <div class="flex flex-wrap justify-left mt-10">
+            <div class="w-full flex flex-wrap justify-start mt-10">
                 <MenuCard @open="showDetail(item.id)" v-for="(item, index) in menu_data" :headText="item.name"
                     :address="item.address" :image="item.image" :id="item.id" />
             </div>
