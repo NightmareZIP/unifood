@@ -131,7 +131,6 @@ export default {
                 'rejected': 'Отклоненные заказы',   
                 
             }
-            console.log(statuses[status])
             return statuses[status]
         }
     },

@@ -52,3 +52,13 @@ class OrdersSerializer(serializers.ModelSerializer):
         for menu_item in menu_items:
             OrdersItems.objects.create(order=order, **menu_item)
         return order
+
+class OrdersUpdateSerializer(serializers.ModelSerializer):
+    """Класс сериалайзера блюд у заказов
+    """
+    class Meta:
+        model = Orders
+        read_only_fields = (    
+        ),
+        extra_kwargs = {'order': {'required': False,}}
+        fields = ('status', 'owner_comment')

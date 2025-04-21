@@ -107,7 +107,7 @@ export default {
             return this.$store.state.worker.is_head
         },
         safe() {
-            if (is_head) {
+            if (this.is_head) {
                 return "Сохранить"
             }
             else {

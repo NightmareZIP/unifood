@@ -4,7 +4,7 @@ from rest_framework import viewsets, mixins
 from django.contrib.auth.models import User
 from worker.models import Worker
 from menu.models import Menu, MenuItem
-from .serializers import OrdersSerializer
+from .serializers import OrdersSerializer, OrdersUpdateSerializer
 from .models import Orders
 from rest_framework import generics
 from django.core.exceptions import PermissionDenied
@@ -50,16 +50,6 @@ class OrdersUserViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, **filter)
         self.check_object_permissions(self.request, obj)
-        # d_obj = model_to_dict(obj)
-        # full_menu = []
-        # for item in d_obj['menu_items']:
-        #     price = item.price
-        #     menu = model_to_dict(item.menu)
-        #     item = model_to_dict(item)
-        #     item.update(menu)
-        #     item['price'] = price
-        #     full_menu.append(item)
-        # obj.full_menu_items = full_menu
         return obj
     
 class OrdersViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.ListModelMixin):
@@ -76,3 +66,27 @@ class OrdersViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.Lis
         menu = self.request.query_params.get('menu')
         menu = Menu.objects.get(id=menu)
         return self.queryset.filter(company=cmp_id, menu=menu).order_by('-id')
+    
+        
+class OrdersUpdateViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
+    serializer_class = OrdersUpdateSerializer
+    queryset = Orders.objects.all()
+    permission_classes = [AllowAny]
+    def get_company(self):
+        user = self.request.user
+        worker: Worker = Worker.objects.get(user_id=user)
+        cmp_id = worker.company
+        return worker, cmp_id
+    
+    def perform_update(self, serializer):
+        user = self.request.user
+        if not user and ('owner_comment' in self.request.data or self.request.data.get('status', '') != 'cnacel') :
+            raise PermissionDenied('You are not allowed to change this order')
+        worker, cmp = self.get_company()
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        order_id = self.kwargs[lookup_url_kwarg]
+        # raise Exception(Orders.objects.get(id=order_id).company.id)
+        order_company = Orders.objects.get(id=order_id).company.id
+        if order_company != cmp.id:
+            raise PermissionDenied('You are not allowed to change this order')
+        serializer.save()
