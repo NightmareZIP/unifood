@@ -55,7 +55,7 @@
             <button @click="update('ready')" type="submit"
                 class="flex-1 mt-6 mr-2 flex items-center justify-center rounded-md border border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden">Заказ
                 готов</button>
-            <button @click="updte('reject')" type="submit"
+            <button @click="update('reject')" type="submit"
                 class="flex-1 mt-6 flex items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-3 text-base font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-hidden">Отклонить
                 заказ</button>
         </div>
@@ -185,8 +185,8 @@ export default {
             let statuses = {
                 'new': 'Создан',
                 'ready': 'Готов',
-                'cancelled': 'Отменен',
-                'rejected': 'Отклонен',
+                'cancel': 'Отменен',
+                'reject': 'Отклонен',
 
             }
             console.log(statuses[status])

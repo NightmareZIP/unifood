@@ -14,8 +14,8 @@ class Orders(models.Model):
     class  StatusEnum(models.TextChoices):
         NEW = "new", "New order"
         READY = "ready", "Ready for delivery"
-        CANCELLED = "cancelled", "Cancelled"
-        REJECTED = "rejected", "Rejected"
+        CANCELLED = "cancel", "Cancelled"
+        REJECTED = "reject", "Rejected"
         
 
     #создание аргумента сущности

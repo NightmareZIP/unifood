@@ -1,7 +1,7 @@
 <template>
     <h1 v-if="!is_tarif">Внимание! У вас нет активного тарифа функционал сервиса недоуступен!</h1>
-    <div v-else class="w-full flex flex-wrap justify-start mt-10 p-8 flex-row">
-        <div v-for="(items, key) in items_data">
+    <div v-else class="w-full flex flex-wrap justify-start mt-10 p-8 flex-col">
+        <div v-for="(items, key) in items_data" class="">
             <p class="text-gray-500 text-lg font-bold">{{ translateStatus(key) }}</p>
             <div class="flex flex-wrap">
                 <OrderCard v-for="(item, index) in items" :headText=item.id :customer_name=item.customer_name
@@ -98,7 +98,12 @@ export default {
             await axios.get("/api/v1/orders/?menu=" + Number(this.$route.query.menu), {
 
             }).then(response => {
-                this.items_data = {}
+                this.items_data = {
+                    'new': [],
+                    'ready': [],
+                    'cancel': [],
+                    'reject': [],
+                }
                 this.unsorted_data = response.data
                 for (let key in response.data) {
                     let item = response.data[key]
@@ -127,8 +132,8 @@ export default {
             let statuses = {
                 'new': 'Новые заказы',
                 'ready': 'Завершенные заказы',
-                'cancelled': 'Отмененные заказы',
-                'rejected': 'Отклоненные заказы',   
+                'cancel': 'Отмененные заказы',
+                'reject': 'Отклоненные заказы',
                 
             }
             return statuses[status]

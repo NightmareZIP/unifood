@@ -60,5 +60,5 @@ class OrdersUpdateSerializer(serializers.ModelSerializer):
         model = Orders
         read_only_fields = (    
         ),
-        extra_kwargs = {'order': {'required': False,}}
+        extra_kwargs = {'owner_comment': {'required': False,}}
         fields = ('status', 'owner_comment')
