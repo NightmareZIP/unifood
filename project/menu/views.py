@@ -59,15 +59,9 @@ class MenuItemViewSet(viewsets.ModelViewSet):
     pagination_class = ResultsSetPagination
     permission_classes = [IsAuthenticated|ReadOnlyPermission]
     def get_queryset(self):
-        """
-        Get the queryset based on the user's company ID.
-
-        Returns:
-            QuerySet: The queryset filtered based on the user's company ID, or False if the worker is not found.
-        """
         # worker, cmp_id = self.get_company()
-        menu_id = self.request.query_params.get('menu')
-        tarif = Menu.objects.get(pk=menu_id).company.tarif
+        menu_id = self.request.query_params.get('menu', None) or self.request.data.get('menu')
+        tarif = Menu.objects.get(id=menu_id).company.tarif
         if not tarif:
             return False
         limit: Tarif = tarif.max_menu

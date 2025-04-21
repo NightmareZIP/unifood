@@ -6,6 +6,7 @@ from .models import Tarif
 class TarifSerializer(serializers.ModelSerializer):
     """Класс сериалайзера тарифов
     """
+    tarif_date = serializers.DateTimeField(read_only=True)
     class Meta:
         #Сущность
         model = Tarif

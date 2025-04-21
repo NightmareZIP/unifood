@@ -28,5 +28,5 @@ urlpatterns = [
     path('api/v1/', include('worker.urls')),
     path('api/v1/', include('tarif.urls')),
     path('api/v1/', include('menu.urls')),
-    # path('api/v1/', include('orders.urls')),
+    path('api/v1/', include('orders.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -4,6 +4,7 @@ from django.db import models
 from company.models import Company
 from helper.images import upload_to
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 class Menu(models.Model):
     """Сущноcть компании
 
@@ -58,8 +59,8 @@ class MenuItem(models.Model):
     @property
     def discount_price(self):
         is_dicount = self.discount
-        started = self.discount_start is None or self.discount_start<=datetime.now()
-        not_ended = self.discount_end is None or self.discount_end>=datetime.now()
+        started = self.discount_start is None or self.discount_start<=timezone.now()
+        not_ended = self.discount_end is None or self.discount_end>=timezone.now()
         if is_dicount and started and not_ended:
             return round(self.price - (self.price * is_dicount)/100,2)
         else:

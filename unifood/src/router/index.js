@@ -12,6 +12,8 @@ import Profile from '../views/Profile.vue'
 import CompanyInfo from '../views/CompanyInfo.vue'
 import Workers from '../views/Workers.vue'
 import ProfileMenu from '../views/ProfileMenu.vue'
+import Orders from '../views/Orders.vue'
+import UserOrder from '../views/UserOrder.vue'
 // import { props } from 'stylus/lib/utils'
 
 // Объявление объекта роутера
@@ -68,6 +70,19 @@ const routes = [
     meta: { requiresAuth: true },
     component: Menu
   },
+  {
+    path: '/orders/',
+    name: 'orders',
+    meta: { requiresAuth: true },
+    component: Orders
+  },
+  {
+    path: '/orders/:uuiid',
+    name: 'orders-detail',
+    meta: { requiresAuth: false },
+    component: UserOrder
+  },
+  
 
   {
     path: '/order-menu/:id',

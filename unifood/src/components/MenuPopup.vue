@@ -1,6 +1,6 @@
 <template>
-    <div class="fixed inset-0 bg-gray-500/75 z-10 w-screen overflow-y-auto md:block" role="dialog"
-        aria-hidden="true" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-500/75 z-10 w-screen overflow-y-auto md:block" role="dialog" aria-hidden="true"
+        aria-modal="true">
         <form @submit.prevent="submitForm"
             class="flex min-h-full justify-center text-center md:items-center md:px-2 lg:px-4 lg:items-center">
             <div
@@ -17,7 +17,7 @@
                     <div v-if="menu_data?.image" class="sm:col-span-4 lg:col-span-5 relative">
                         <img :src="menu_data.image" alt="Добавьте сюда ваш логотип"
                             class="w-full h-full rounded-lg bg-gray-100 object-scale-down">
-                        <input :disabled="!is_head" @change="setImage" id="rela-file" type="file"
+                        <input v-if="is_head" @change="setImage" id="rela-file" type="file"
                             class="hidden absolute bottom-0" />
                     </div>
                     <div v-else class="w-full h-full sm:col-span-4 lg:col-span-5 relative">
@@ -51,11 +51,14 @@
                                     <qrcode-vue :value="qrcode" render-as="canvas" class="canvas_qr" size="200"
                                         margin="0"></qrcode-vue>
                                 </div>
-                                <button @click="download_qr" class="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-gray-600 px-8 py-3 text-base font-medium text-white hover:bg-gray-700 focus:ring-2 focus">Скачать QR</button>
+                                <button @click="download_qr"
+                                    class="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-gray-600 px-8 py-3 text-base font-medium text-white hover:bg-gray-700 focus:ring-2 focus">Скачать
+                                    QR</button>
                             </div>
                         </div>
                         <button v-if="is_head" @click="save" type="submit"
-                            class="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden">Сохранить</button>
+                            class="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden">{{
+                            safe }}</button>
                         <button v-if="!menu_data.is_new && is_head" @click="delete_menu" type="submit"
                             class="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-3 text-base font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-hidden">Удалить</button>
                     </div>
@@ -103,6 +106,14 @@ export default {
         is_head() {
             return this.$store.state.worker.is_head
         },
+        safe() {
+            if (is_head) {
+                return "Сохранить"
+            }
+            else {
+                return 'Закрыть'
+            }
+        }
     },
     methods: {
         setImage(e) {

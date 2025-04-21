@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p v-if="tarif" class="text-center text-3xl font-bold underline">Ваш тариф {{ company_tarif.name }} действует до
+        <p v-if="is_tarif" class="text-center text-3xl font-bold underline">Ваш тариф {{ company_tarif.name }} действует до
             {{ worker.company.tarif_date }}</p>
         <p v-else class="text-center text-3xl font-bold underline">У вас нет активного тарифа, функционал не доступен
         </p>
@@ -59,9 +59,11 @@ export default {
     },
     computed: {
         is_head() { return this.$store.state.worker.is_head },
-        state_tarif() { this.tarif = this.$store.state.worker.company.tarif },
-        state_company_id() { this.$store.state.worker.company.id}
-
+        // state_tarif() { this.tarif = this.$store.state.worker.company.tarif },
+        state_company_id() { this.$store.state.worker.company.id},
+        is_tarif(){
+            return this.company_tarif.tarif_date && new Date(this.company_tarif.tarif_date) > Date.now()
+        },
     },
 
     methods: {

@@ -31,6 +31,8 @@ class MenuItemSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Скидка должна быть больше 0 и меньше 99')
             if not (0 < price):
                 raise serializers.ValidationError('Цена не может быть отрицательной и содержать более 2 знаков после запятой')
+            if data.get('discount_price'):
+                del data['discount_price']
             return data
 
     class Meta:
@@ -46,4 +48,6 @@ class MenuItemSerializer(serializers.ModelSerializer):
                         'discount_start': {'required': False, 'format': '%Y-%m-%d'},
                         'discount_end': {'required': False, 'format': '%Y-%m-%d'},
                         'company': {'required': False},
+                        'discount_price': {'read_only': True}
                         }
+

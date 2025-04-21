@@ -42,12 +42,12 @@
                         <p class=" text-md  text-gray-900 sm:text-4xl">
                             Категория: {{ item_data.category }}
                         </p>
-                        <p v-if="!item_data.discount_price" class=" text-md  text-gray-900 sm:text-4xl">
-                            Цена: {{ item_data.price }}
+                        <p v-if="item_data.price==item_data.discount_price" class=" text-md  text-gray-900 sm:text-4xl">
+                            Цена: {{ item_data.price }}₽
                         </p>
-                        <div v-else class="flex items-center">
-                            <p class="line-through text-gray-500 mr-2">{{item_data.price}}</p>
-                            <p class="text-lg  mr-2">{{ item_data.discount_price }}</p>
+                        <div v-else class="flex justify-center items-center">
+                            <p class="line-through text-gray-500 mr-2">{{ item_data.price }}₽</p>
+                            <p class="text-lg  mr-2">{{ item_data.discount_price }}₽</p>
                             <p class="text-sm text-gray-500">-{{ item_data.discount }}%</p>
                         </div>
                         <p class=" text-md  text-gray-900 sm:text-4xl">
@@ -56,12 +56,14 @@
                         <textarea rows="4" v-model="user_comment" placeholder="Ваш комментарий для блюда"
                             class="text-3xl mt-6 mb-6 w-auto text-gray-900 sm:text-4xl"></textarea>
                         <div class="flex items-center">
-                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                            <button @click="decrease"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
                                 -
                             </button>
-                            <input class="border border-gray-400 rounded px-4 py-2 mr-2 text-center" type="text"
-                                value="1">
-                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <input :value="current_amount" @input="set_amount($event.target.value)"
+                                class="border border-gray-400 rounded px-4 py-2 mr-2 text-center" type="text">
+                            <button @click="increase"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 +
                             </button>
                         </div>
@@ -94,26 +96,60 @@ export default {
             discount_end: null,
             menu: null,
         },
+        amount: 0,
 
     },
     data() {
         return {
             types: {},
             logo_input: null,
+            current_amount: this.amount,
+            user_comment: '',
         }
     },
     mounted() {
 
     },
-    computed: {        
+    computed: {
     },
     methods: {
+        set_amount(amount) {
+            try {
+                if (!isNaN(amount)){
+                    console.log(amount)
+                    
+                    this.current_amount = Number(amount)
+                }
+                else{
+                    this.current_amount = 1
+                }
+            }
+            catch (e) {
+                console.log(e)
+                this.current_amount = 1
+            }
+        },
         add_to_cart() {
-            this.$emit('add_to_cart', this.amount, this.user_comment)
+            try {
+                this.current_amount = Number(this.current_amount)
+                this.$emit('set_to_cart', this.item_data.id ,this.current_amount, this.user_comment)
+                this.close()
+            }
+            catch (e) {
+                this.current_amount = 1
+            }
         },
         close() {
             this.$emit('close')
         },
+        increase() {
+            this.current_amount += 1;
+        },
+        decrease() {
+            if (this.current_amount > 0) {
+                this.current_amount -= 1;
+            }
+        }
     },
 }
 </script>

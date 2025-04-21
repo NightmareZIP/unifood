@@ -30,7 +30,8 @@ class Orders(models.Model):
     customer_comment = models.TextField(blank=True, null=True, verbose_name="Комментарий покупателя")
     owner_comment = models.TextField(blank=True, null=True, verbose_name="Комментарий покупателя")
     total_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    items = models.ManyToManyField(MenuItem, through="OrdersItems")
+    menu_items = models.ManyToManyField(MenuItem, through="OrdersItems")
+    uuid = models.UUIDField(auto_created=True)
 
     def __str__(self):
         """_summary_
@@ -38,7 +39,7 @@ class Orders(models.Model):
         Returns:
             string: наименование экземпляра в сущности для админ панели
         """
-        return '%s' % self.name
+        return '%s' % self.id
 
 class OrdersItems(models.Model):
     """Сущноcть компании
@@ -55,7 +56,6 @@ class OrdersItems(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, null=False, verbose_name="Пункт меню")
     amount = models.IntegerField(default=1, verbose_name="Количество")
     price = models.DecimalField(max_digits=10, decimal_places=2)
-  
    
     def __str__(self):
         """_summary_
@@ -63,5 +63,5 @@ class OrdersItems(models.Model):
         Returns:
             string: наименование экземпляра в сущности для админ панели
         """
-        return f'{self.company.name}:{self.menu_item.name}'
+        return f'{self.id}:{self.menu_item.name}'
 
