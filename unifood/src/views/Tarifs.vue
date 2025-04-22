@@ -1,6 +1,7 @@
 <template>
     <div>
-        <p v-if="is_tarif" class="text-center text-3xl font-bold underline">Ваш тариф {{ company_tarif.name }} действует до
+        <p v-if="is_tarif" class="text-center text-3xl font-bold underline">Ваш тариф {{ company_tarif.name }} действует
+            до
             {{ worker.company.tarif_date }}</p>
         <p v-else class="text-center text-3xl font-bold underline">У вас нет активного тарифа, функционал не доступен
         </p>
@@ -41,9 +42,7 @@ export default {
         }
     },
     mount() {
-        // this.tarif = this.$store.state.worker.company.tarif
-        // this.company_id = this.$store.state.worker.company.id
-        // this.test=4
+
     },
     created() {
         this.get_data();
@@ -53,15 +52,11 @@ export default {
             }
         }
         )
-        // this.tarif = this.$store.state.worker.company.tarif
-        // this.company_id = this.$store.state.worker.company.id
 
     },
     computed: {
         is_head() { return this.$store.state.worker.is_head },
-        // state_tarif() { this.tarif = this.$store.state.worker.company.tarif },
-        state_company_id() { this.$store.state.worker.company.id},
-        is_tarif(){
+        is_tarif() {
             return this.company_tarif.tarif_date && new Date(this.company_tarif.tarif_date) > Date.now()
         },
     },
@@ -69,14 +64,13 @@ export default {
     methods: {
         async get_user() {
             await axios
-                .get("/api/v1/workers/")
+                .get("/api/v1/workers/0")
                 .then(response => {
-                    console.log(response)
-                    this.worker = response.data[0]
+                    this.worker = response.data
                     this.tarif = this.worker.company.tarif
                     this.company_id = this.worker.company.id
 
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     console.log(error)
@@ -106,7 +100,7 @@ export default {
                 .then(response => {
                     console.log(response)
                     this.company_tarif = response.data
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     if (error.response) {
@@ -129,7 +123,7 @@ export default {
                     console.log(response);
                     this.tarif = response.data.tarif;
                     await this.get_tarif();
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     if (error.response) {

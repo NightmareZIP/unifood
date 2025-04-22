@@ -171,9 +171,7 @@ export default {
             }
         },
         async delete_menu() {
-            if (this.$store.state.worker.id) {
-                this.item_data.user_id = this.$route.params.id
-            }
+
             await axios
                 .delete("/api/v1/menu-items/" + this.item_data.id + '/', {
                     headers: {

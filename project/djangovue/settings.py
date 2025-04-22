@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'worker',
     'company',
-    'event',
     'tarif',
     'menu',
     'orders',

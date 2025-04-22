@@ -87,7 +87,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.$store.state.user.id)
     },
     computed: {
         is_head() {
@@ -153,8 +152,8 @@ export default {
                     }
                 })
                 .then(response => {
-                    console.log(response)
-                    this.close()
+                    this.$router.push('/orders/' + response.data.uuid)
+                    // this.close()
 
                 })
                 .catch(error => {

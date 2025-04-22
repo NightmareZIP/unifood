@@ -9,6 +9,7 @@
             <p class="text-gray-700">Для увеличения количества меню, необходимо приобрести расширение тарифа.</p>
         </div>
         <div class="pl-5 pr-5 relative">
+            <p class="text-4xl font-bold">Меню {{ this.menu_data.company_detail }}</p>
             <button v-if="can_add" @click=" newMenu()"
                 class="bg-amber-600 hover:bg-orange-700 text-white font-bold text-3xl py-4 px-6 mt-10 rounded-full">
                 +
@@ -45,7 +46,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        <OrderDetail @close="showOrderPopup = false" :order="order"/>
+                        <OrderDetail @close="showOrderPopup = false" :order="order" />
                     </div>
                 </div>
             </div>
@@ -68,6 +69,7 @@ export default {
     },
     data() {
         return {
+            menu_data: {},
             company_tarif: {},
             errors: [],
             tarif: 0,
@@ -79,7 +81,7 @@ export default {
             count: 0,
             unsorted_data: [],
             order: {
-                menu_items:{},
+                menu_items: {},
                 customer_name: '',
                 custumer_phone: '',
                 customer_comment: '',
@@ -93,6 +95,7 @@ export default {
         this.get_data();
         this.get_user();
         this.get_tarif();
+        this.get_menu();
 
     },
     computed: {
@@ -114,9 +117,9 @@ export default {
         //Вынести в отдельную либу?
         async get_user() {
             await axios
-                .get("/api/v1/workers/")
+                .get("/api/v1/workers/0")
                 .then(response => {
-                    this.worker = response.data[0]
+                    this.worker = response.data
                     this.tarif = this.worker.company.tarif
                     this.company_id = this.worker.company.id
                 })
@@ -130,7 +133,7 @@ export default {
                 .get("/api/v1/tarif/" + this.tarif + '/?menu=' + this.$route.params.menu_id)
                 .then(response => {
                     this.company_tarif = response.data
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     if (error.response) {
@@ -176,6 +179,27 @@ export default {
                         console.log(JSON.stringify(error))
                     }
                 })
+        },
+        async get_menu() {
+            await axios.get("/api/v1/menu/" + Number(this.$route.params.menu_id), {
+
+            }).then(response => {
+                this.menu_data = response.data
+
+            })
+                .catch(error => {
+                    if (error.response) {
+                        for (const property in error.response.data) {
+                            this.errors.push(`${property}: ${error.response.data[property]}`)
+                        }
+                        console.log(JSON.stringify(error.response.data))
+                    } else if (error.message) {
+                        console.log(JSON.stringify(error.message))
+                    } else {
+                        console.log(JSON.stringify(error))
+                    }
+                })
+
         },
         newMenu() {
 

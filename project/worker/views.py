@@ -10,6 +10,7 @@ from rest_framework import generics
 from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import AllowAny
 
 
 class WorkerCompanyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -24,7 +25,7 @@ class WorkerCompanyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     # Задаем сущность для работы
     queryset = Worker.objects.all()
     # Выполнение создания записи (post запрос)
-
+    permission_classes = (AllowAny, )
     def perform_create(self, serializer):
         serializer.save()
 
@@ -46,7 +47,7 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
     serializer_class = WorkerSerializer
     # задаем сущность для работы
     queryset = Worker.objects.all()
-
+    permission_classes = (AllowAny, )
     def get_object(self):
         """получение конкретной записи из бд на основе id передаваемого при запросе
 
@@ -54,7 +55,7 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
             _type_: _description_
         """
         # фильтруем данные на основе фильтра
-        queryset = self.filter_queryset(Worker.objects.all())
+        queryset = self.queryset
         # Ищем в url id пердаваемый в url
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         # Проверяем его наличие
@@ -64,8 +65,13 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
             'attribute on the view correctly.' %
             (self.__class__.__name__, lookup_url_kwarg)
         )
+        #Если передали 0 то это запрос информации о самом себе
+        worker_id = self.kwargs[lookup_url_kwarg]
+        if int(worker_id) == 0:
+            worker_id = get_worker(self.request.user)
+
         # Записываем его в фильтр
-        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        filter_kwargs = {self.lookup_field: worker_id}
         # Получаем в БД запись с id либо возвращаем ошибку 404
         obj = get_object_or_404(queryset, **filter_kwargs)
 
@@ -75,10 +81,14 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         return obj
 
     def get_queryset(self):
-        """Указываем, что нужно получать только запись сотрудника, отправившего запрос
         """
-        worker_id = get_worker(self.request.user)
-        return self.queryset.filter(pk=worker_id)
+            Указываем, что нужно получать только запись сотрудника, отправившего запрос
+        """
+        company = self.request.user.worker_user.company
+        return self.queryset.filter(company=company)
+        
+        # worker_id = get_worker(self.request.user)
+        # return self.queryset.filter(pk=worker_id)
 
     def perform_create(self, serializer):
         """Обработка запроса на создание Работника
@@ -112,21 +122,21 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
 
         serializer.save()
 
-    @action(detail=False)
-    def get_workers(self, request):
-        """Получение коллег работника (сотрудники той же компании)
-        Декотор @action сообщает, что это метод собственный метод, обрабатывающий
-        запрос
+    # @action(detail=False)
+    # def get_workers(self, request):
+    #     """Получение коллег работника (сотрудники той же компании)
+    #     Декотор @action сообщает, что это метод собственный метод, обрабатывающий
+    #     запрос
 
-        Args:
-            request (_type_): объект запрос
+    #     Args:
+    #         request (_type_): объект запрос
 
-        """
-        q_set = self.get_queryset()
-        company = self.request.user.worker_user.company
-        workers = Worker.objects.all().filter(company=company)
-        # Проверка прав
-        self.check_object_permissions(self.request, workers)
-        serializer = self.get_serializer(workers, many=True)
-        # Возвращаем в ответе сериализованные данные
-        return Response(serializer.data)
+    #     """
+    #     q_set = self.get_queryset()
+    #     company = self.request.user.worker_user.company
+    #     workers = Worker.objects.all().filter(company=company)
+    #     # Проверка прав
+    #     self.check_object_permissions(self.request, workers)
+    #     serializer = self.get_serializer(workers, many=True)
+    #     # Возвращаем в ответе сериализованные данные
+    #     return Response(serializer.data)

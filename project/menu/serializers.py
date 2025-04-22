@@ -6,6 +6,7 @@ from .models import Menu, MenuItem
 class MenuSerializer(serializers.ModelSerializer):
     """Класс сериалайзера компании
     """
+    company_detail = serializers.StringRelatedField(source='company', read_only=True)
     class Meta:
         #Сущность
         model = Menu

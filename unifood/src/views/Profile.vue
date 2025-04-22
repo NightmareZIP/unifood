@@ -86,11 +86,11 @@ export default {
     methods: {
         async get_data() {
             await axios
-                .get("/api/v1/workers/")
+                .get("/api/v1/workers/0")
                 .then(response => {
                     console.log(response)
-                    this.user_info = response.data[0]
-                    // this.$router.push('/login')
+                    this.user_info = response.data
+
                 })
                 .catch(error => {
                     if (error.response) {
@@ -112,7 +112,7 @@ export default {
                 .then(response => {
                     console.log(response)
                     this.user_info = response.data[0]
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     if (error.response) {

@@ -9,6 +9,7 @@ export default createStore({
     },
     isAuthenticated: false,
     token: '',
+    worker: {},
   },
   getters: {
   },
@@ -27,7 +28,7 @@ export default createStore({
         state.token = ''
         state.isAuthenticated = false
       }
-      state.worker = ''
+      state.worker = {}
 
     },
     //Установка токена

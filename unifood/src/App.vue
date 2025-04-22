@@ -14,7 +14,6 @@
         <span class="navbar"><router-link to="/company-register" v-if=!$store.state.isAuthenticated>Зарегестрировать
             компанию</router-link></span>
         <span class="navbar"><router-link to="/menu" v-if=$store.state.isAuthenticated>Меню</router-link></span>
-        <span class="navbar"><router-link to="/orders" v-if=$store.state.isAuthenticated>Заказы</router-link></span>
         <span class="navbar"><router-link to="/my-profile">Моя компания</router-link
             v-if=$store.state.isAuthenticated></span>
       </div>
@@ -47,23 +46,21 @@ export default {
       // по умолчанию при отправке запросов
       axios.defaults.headers.common['Authorization'] = "Token " + token
       // Шлем запрос для получения информации о сотруднике и так же записывае информацию в хранилище
+      let done = false
       axios
-        .get("/api/v1/workers/")
+        .get("/api/v1/workers/0/")
         .then(response => {
-          console.log(response)
-          let worker = response.data[0]
+          let worker = response.data
           this.$store.commit('setWorker', worker)
-          // this.$router.push('/login')
         })
         .catch(error => {
           console.log(error)
         })
 
+
     } else {
       axios.defaults.headers.common['Authorization'] = ""
     }
-    // console.log(this.$store);
-    // console.log(Object.values(this.$store.state.user));
   },
   methods: {
     //Прописываем метод для разавторизации пользователя

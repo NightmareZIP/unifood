@@ -60,13 +60,13 @@
                 <div>
                     <button type="submit"
                         class="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-outline-amber-500">
-                        {{enterText}}</button>
+                        {{ enterText }}</button>
                 </div>
             </form>
 
             <hr>
 
-            <router-link v-if="!is_head" to="/login">Войти в сущетсвующий аккаунт</router-link>
+            <router-link v-if="!this.worker" to="/login">Войти в сущетсвующий аккаунт</router-link>
         </div>
     </div>
 </template>
@@ -77,6 +77,7 @@ export default {
     name: 'Register',
     data() {
         return {
+            worker: {},
             username: '',
             password: '',
             name: '',
@@ -86,35 +87,58 @@ export default {
             country: '',
             company: Number(this.$route.params.companyid),
             errors: [],
-            is_head: this.$store.state.worker?.is_head
         }
     },
     computed: {
         enterText() {
-            return this.is_head ? "Зарегистрировать сотрудника" : "Зарегистрироваться"
+            return this.worker ? "Зарегистрировать сотрудника" : "Зарегистрироваться"
         }
     },
+    mounted() {
+        this.get_user()
+    },
     methods: {
-        async submitForm(e) {
-            axios.defaults.headers.common["Authorization"] = ""
-            sessionStorage.removeItem("token")
-            this.errors = []
-            const formData = {
-                username: this.username,
-                password: this.password
-            }
-
-            let user_id = 0;
-            //Создаем django пользователя (поля логин и пароль)
+        async get_user() {
             await axios
-                .post("/api/v1/users/", formData)
+                .get("/api/v1/workers/0")
                 .then(response => {
-                    console.log(response)
-                    user_id = response.data.id
-
-                    // this.$router.push('/login')
+                    this.worker = response.data
+                    if (!this.worker.is_head) {
+                        this.$router.push('/')
+                    }
                 })
                 .catch(error => {
+                    console.log(error)
+                })
+        },
+        async submitForm(e) {
+            if (!this.worker) {
+                axios.defaults.headers.common["Authorization"] = ""
+                sessionStorage.removeItem("token")
+            }
+            this.errors = []
+                       
+            const userData = {
+                username: this.username,
+                password: this.password,
+                name: this.name,
+                last_name: this.last_name,
+                surname: this.surname,
+                email: this.username,
+                contact_phone: this.contact_phone,
+                country: this.country,
+                company: this.$route.params.companyid,
+            }
+            //Создаем самого работника
+            await axios
+                .post("/api/v1/workers/", userData)
+                .then(response => {
+                    console.log(response)
+
+                    alert("Регистрация прошла успешно!")
+                })
+                .catch(error => {
+                    console.log("ERROR")
                     if (error.response) {
                         for (const property in error.response.data) {
                             this.errors.push(`${property}: ${error.response.data[property]}`)
@@ -125,12 +149,12 @@ export default {
                     } else {
                         console.log(JSON.stringify(error))
                     }
+      
                 })
-            console.log('ID ' + user_id)
             //авторизируемся, нужно для записи других данных
-            if (!this.is_head) {
+            if (!this.worker) {
                 await axios
-                    .post("/api/v1/token/login/", formData)
+                    .post("/api/v1/token/login/", userData)
                     .then(response => {
                         const token = response.data.auth_token
                         this.$store.commit('setToken', token)
@@ -150,61 +174,7 @@ export default {
                             console.log(JSON.stringify(error))
                         }
                     })
-            }
-            const userData = {
-                user_id: user_id,
-                name: this.name,
-                last_name: this.last_name,
-                surname: this.surname,
-                email: this.username,
-                contact_phone: this.contact_phone,
-                country: this.country,
-                company: this.$route.params.companyid,
-            }
-            //Создаем самого работника
-            await axios
-                .post("/api/v1/workers/", userData)
-                .then(response => {
-                    console.log(response)
 
-                })
-                .catch(error => {
-                    console.log("ERROR")
-                    const deliting = {
-                        current_password: formData.password
-                    }
-                    //В случае неудачи удаляем пользователя django 
-                    axios
-                        .delete("/api/v1/users/me", { data: deliting, headers: { "Authorization": "Token " + sessionStorage.getItem("token") } })
-                        .then(response => {
-                            console.log(response)
-                            // this.$router.push('/login')
-                        })
-                        .catch(error => {
-                            if (error.response) {
-                                for (const property in error.response.data) {
-                                    this.errors.push(`${property}: ${error.response.data[property]}`)
-                                }
-                                console.log(JSON.stringify(error.response.data))
-                            } else if (error.message) {
-                                console.log(JSON.stringify(error.message))
-                            } else {
-                                console.log(JSON.stringify(error))
-                            }
-                        })
-                    if (error.response) {
-                        for (const property in error.response.data) {
-                            this.errors.push(`${property}: ${error.response.data[property]}`)
-                        }
-                        console.log(JSON.stringify(error.response.data))
-                    } else if (error.message) {
-                        console.log(JSON.stringify(error.message))
-                    } else {
-                        console.log(JSON.stringify(error))
-                    }
-                    throw "Oops"
-                })
-            if (!this.is_head) {
                 await axios
                     .get("/api/v1/users/me")
                     .then(response => {

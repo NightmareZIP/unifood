@@ -16,10 +16,10 @@ import axios from 'axios'
 import OrderCard from "../components/OrderCard.vue";
 
 export default {
-    components: {OrderCard},
+    components: { OrderCard },
     name: "Order",
     props: {
-        
+
     },
     data() {
         return {
@@ -47,13 +47,11 @@ export default {
     },
     computed: {
         is_head() { return this.$store.state.worker.is_head },
-        can_add() {
-            return this.$store.state.worker.is_head && this.company_tarif.max_menu > this.count
-        },
+
         is_tarif() {
             return this.company_tarif.tarif_date && new Date(this.company_tarif.tarif_date) > Date.now()
         },
-        
+
 
     },
 
@@ -61,10 +59,9 @@ export default {
         //Вынести в отдельную либу?
         async get_user() {
             await axios
-                .get("/api/v1/workers/")
+                .get("/api/v1/workers/0")
                 .then(response => {
-                    console.log(response)
-                    this.worker = response.data[0]
+                    this.worker = response.data
                     this.tarif = this.worker.company.tarif
                     this.company_id = this.worker.company.id
                 })
@@ -79,7 +76,7 @@ export default {
                 .then(response => {
                     console.log(response)
                     this.company_tarif = response.data
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     if (error.response) {
@@ -134,7 +131,7 @@ export default {
                 'ready': 'Завершенные заказы',
                 'cancel': 'Отмененные заказы',
                 'reject': 'Отклоненные заказы',
-                
+
             }
             return statuses[status]
         }

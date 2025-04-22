@@ -154,22 +154,26 @@ export default {
             axios.defaults.headers.common["Authorization"] = ""
             sessionStorage.removeItem("token")
             this.errors = []
-            const formData = {
+            const userData = {
+                name: this.name,
+                last_name: this.last_name,
+                surname: this.surname,
+                email: this.username,
+                contact_phone: this.contact_phone,
+                country: this.country,
+                company: this.company_data,
                 username: this.username,
-                password: this.password
+                password: this.password,
             }
-
-            let user_id = 0;
-            //Создаем django пользователя (поля логин и пароль)
+            //Создаем самого работника
             await axios
-                .post("/api/v1/users/", formData)
+                .post("/api/v1/workercompany/", userData)
                 .then(response => {
                     console.log(response)
-                    user_id = response.data.id
 
-                    // this.$router.push('/login')
                 })
                 .catch(error => {
+                    console.log("ERROR")
                     if (error.response) {
                         for (const property in error.response.data) {
                             this.errors.push(`${property}: ${error.response.data[property]}`)
@@ -181,10 +185,8 @@ export default {
                         console.log(JSON.stringify(error))
                     }
                 })
-            console.log('ID ' + user_id)
-            //авторизируемся, нужно для записи других данных
             await axios
-                .post("/api/v1/token/login/", formData)
+                .post("/api/v1/token/login/", userData)
                 .then(response => {
                     const token = response.data.auth_token
                     this.$store.commit('setToken', token)
@@ -204,59 +206,7 @@ export default {
                         console.log(JSON.stringify(error))
                     }
                 })
-            const userData = {
-                user_id: user_id,
-                name: this.name,
-                last_name: this.last_name,
-                surname: this.surname,
-                email: this.username,
-                contact_phone: this.contact_phone,
-                country: this.country,
-                company: this.company_data,
-            }
-            //Создаем самого работника
-            await axios
-                .post("/api/v1/workercompany/", userData)
-                .then(response => {
-                    console.log(response)
 
-                })
-                .catch(error => {
-                    console.log("ERROR")
-                    const deliting = {
-                        current_password: formData.password
-                    }
-                    //В случае неудачи удаляем пользователя django 
-                    axios
-                        .delete("/api/v1/users/me", { data: deliting, headers: { "Authorization": "Token " + sessionStorage.getItem("token") } })
-                        .then(response => {
-                            console.log(response)
-                            // this.$router.push('/login')
-                        })
-                        .catch(error => {
-                            if (error.response) {
-                                for (const property in error.response.data) {
-                                    this.errors.push(`${property}: ${error.response.data[property]}`)
-                                }
-                                console.log(JSON.stringify(error.response.data))
-                            } else if (error.message) {
-                                console.log(JSON.stringify(error.message))
-                            } else {
-                                console.log(JSON.stringify(error))
-                            }
-                        })
-                    if (error.response) {
-                        for (const property in error.response.data) {
-                            this.errors.push(`${property}: ${error.response.data[property]}`)
-                        }
-                        console.log(JSON.stringify(error.response.data))
-                    } else if (error.message) {
-                        console.log(JSON.stringify(error.message))
-                    } else {
-                        console.log(JSON.stringify(error))
-                    }
-                    throw "Oops"
-                })
             await axios
                 .get("/api/v1/users/me")
                 .then(response => {

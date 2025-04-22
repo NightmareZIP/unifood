@@ -98,7 +98,7 @@ export default {
             await axios.get("/api/v1/company/").then(response => {
                 console.log(response)
                 this.company_data = response.data[0]
-                // this.$router.push('/login')
+
             })
                 .catch(error => {
                     if (error.response) {
@@ -120,7 +120,7 @@ export default {
                 .then(response => {
                     console.log(response)
                     this.company_data = response.data[0]
-                    // this.$router.push('/login')
+
                 })
                 .catch(error => {
                     if (error.response) {

@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 from .models import Worker
 from company.models import Company
 from company.serializers import CompanySerializer
-from .utils import get_worker
+from django.contrib.auth import get_user_model # If used custom user model
 
+UserModel = get_user_model()
 
 class WorkerCompanySerializer(serializers.ModelSerializer):
     """Класс сериалайзер для применения при регистрации компании
@@ -15,7 +16,8 @@ class WorkerCompanySerializer(serializers.ModelSerializer):
 
     # Указываем что одним из полей является сериалайзер компании, так мы сможем  получать ее данные
     company = CompanySerializer(required=True)
-
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
     class Meta:
         """метаданные класса, указываем, вспомогательный класс основного класса
         """
@@ -25,8 +27,9 @@ class WorkerCompanySerializer(serializers.ModelSerializer):
         read_only_fields = (
             "created_at",
             "head",
+            "user_id",
             # "company",
-        ),
+        )
         #Задаем набор полей, принимаемых сериалайзером
         fields = (
             'name',
@@ -40,7 +43,15 @@ class WorkerCompanySerializer(serializers.ModelSerializer):
             'created_at',
             'head',
             'company',
+            'username',
+            'password',
         )
+        extra_kwargs = {
+            'password': {'write_only': True,},
+            'username': {'write_only': True,},
+
+            }
+
 
     def create(self, validated_data):
         """Создание записи в базе данных
@@ -54,23 +65,78 @@ class WorkerCompanySerializer(serializers.ModelSerializer):
         company = Company.objects.create(**company)
         validated_data['company'] = company
         validated_data['is_head'] = True
-
+        user = UserModel.objects.create_user(
+            username=validated_data.get('username'),
+            password=validated_data.pop('password'),
+        )
         #Создаем сотрудника
         worker = Worker.objects.create(**validated_data)
+        validated_data['user_id'] = user
         worker.save()
-
         return worker
 
 
 class WorkerSerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True, required=False)
-
+    username = serializers.CharField(required=False)
+    password = serializers.CharField(required=False)
     class Meta:
         model = Worker
         read_only_fields = (
             "created_at",
             # "head",
             "company",
-        ),
-        fields = "__all__"
+            "user_id",
+        ) 
+        fields = (
+            "name",
+            "last_name",
+            "surname",
+            "email",
+            "contact_phone",
+            "country",
+            "user_id",
+            "created_at",
+            "head",
+            "company",
+            "is_head",
+            "password",
+            "username",
+            "company",
+        )
+        extra_kwargs = {
+            'password': {'write_only': True,},
+            'username': {'write_only': True,},
+            
+        }
+    def create(self, validated_data):
+        #создаем компанию
+        user = UserModel.objects.create_user(
+            username=validated_data.pop('username'),
+            email=validated_data.get('username'),
+            password=validated_data.pop('password'),
+        )
+        #Создаем сотрудника
+        validated_data['user_id'] = user
+        worker = Worker.objects.create(**validated_data)
+        worker.save()
+        return worker
 
+
+# class UserSerializer(serializers.ModelSerializer):
+
+#     password = serializers.CharField(write_only=True)
+
+#     def create(self, validated_data):
+
+#         user = UserModel.objects.create_user(
+#             username=validated_data['username'],
+#             password=validated_data['password'],
+#         )
+
+#         return user
+
+#     class Meta:
+#         model = UserModel
+#         # Tuple of serialized model fields (see link [2])
+#         fields = ( "id", "username", "password", )
