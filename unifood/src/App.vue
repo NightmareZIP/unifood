@@ -14,8 +14,8 @@
         <span class="navbar"><router-link to="/company-register" v-if=!$store.state.isAuthenticated>Зарегестрировать
             компанию</router-link></span>
         <span class="navbar"><router-link to="/menu" v-if=$store.state.isAuthenticated>Меню</router-link></span>
-        <span class="navbar"><router-link to="/my-profile">Моя компания</router-link
-            v-if=$store.state.isAuthenticated></span>
+        <span class="navbar"><router-link to="/my-profile" v-if=$store.state.isAuthenticated>Моя
+            компания</router-link></span>
       </div>
       <div>
 

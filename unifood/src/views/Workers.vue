@@ -10,13 +10,13 @@
     <div class="p-6">
         <p class="mb-4 text-3xl font-bold">Ваши коллеги</p>
         <div class="flex flex-wrap">
-            <div class="flex flex-wrap">
-                <div v-for="(value, index) in workers_info" :key="index"
-                    class="bg-white rounded-lg shadow-md p-4 flex items-center w-full">
+            <div class="flex flex-wrap flex-col">
+                <div v-for="(value, index) in workers_info" :key="index" @click="$router.push('/workers/' + value.id)"
+                    class="bg-white rounded-lg shadow-md p-4 mb-2 flex  items-center w-auto">
                     <div class="flex flex-col" @click="$router.push('workers/' + value.id)">
-                        <h2 class="text-lg font-medium">{{ value.name }} {{ value.second_name }} </h2>
+                        <h2 class="text-lg font-medium">{{ value.name }} {{ value.last_name }} {{ value.suname_name }}
+                            {{ value.email }} </h2>
                         <p class="text-gray-500">{{ value.contact_phone }}</p>
-                        <p class="text-gray-500">{{ value.email }}</p>
                     </div>
                 </div>
             </div>
@@ -47,15 +47,15 @@ export default {
         },
     },
     mounted() {
-        this.get_tarif()
         this.get_user().then(() => {
             this.get_data()
+            this.get_tarif()
         })
     },
     methods: {
         async get_data() {
             await axios
-                .get("/api/v1/workers/get_workers/")
+                .get("/api/v1/workers/")
                 .then(response => {
                     console.log(response)
                     this.workers_info = response.data
@@ -85,7 +85,7 @@ export default {
             console.log(this.$store.state)
             this.errors = []
             axios
-                .get("/api/v1/tarif/" + this.$store.state.worker.company.tarif + '/')
+                .get("/api/v1/tarif/" + this.tarif + '/')
                 .then(response => {
                     this.company_tarif = response.data
 

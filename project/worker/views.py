@@ -67,7 +67,7 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         )
         #Если передали 0 то это запрос информации о самом себе
         worker_id = self.kwargs[lookup_url_kwarg]
-        if int(worker_id) == 0:
+        if not worker_id or int(worker_id) == 0:
             worker_id = get_worker(self.request.user)
 
         # Записываем его в фильтр
@@ -77,7 +77,12 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
 
         # Проверяем права
         self.check_object_permissions(self.request, obj)
+        worker = Worker.objects.get(user_id=self.request.user)
 
+        # Если работник пытается изменить не свои данные, вызвается ошибка
+        if worker.company.id != obj.company.id:
+            raise PermissionDenied('Wrong object owner')
+        
         return obj
 
     def get_queryset(self):
@@ -86,9 +91,7 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         """
         company = self.request.user.worker_user.company
         return self.queryset.filter(company=company)
-        
-        # worker_id = get_worker(self.request.user)
-        # return self.queryset.filter(pk=worker_id)
+
 
     def perform_create(self, serializer):
         """Обработка запроса на создание Работника
@@ -113,11 +116,12 @@ class WorkerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
             PermissionDenied:
         """
         # получаем запись в БД о данном работнике
-        worker_id = get_worker(self.request.user)
+        worker = Worker.objects.get(user_id=self.request.user)
+
         obj = self.get_object()
 
         # Если работник пытается изменить не свои данные, вызвается ошибка
-        if worker_id != obj.id:
+        if not (worker.id == obj.id or not worker.head) or worker.company.id != obj.company.id:
             raise PermissionDenied('Wrong object owner')
 
         serializer.save()

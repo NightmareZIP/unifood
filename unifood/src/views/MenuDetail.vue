@@ -5,8 +5,8 @@
     <div v-else>
         <div v-if="is_head" class="bg-gray-200 p-4 rounded-lg">
             <p class="text-lg font-bold">Вам достпно еще {{ available_menu }} новых меню, согласно тарифу вы можете
-                работать с {{ company_tarif.max_menu }} меню </p>
-            <p class="text-gray-700">Для увеличения количества меню, необходимо приобрести расширение тарифа.</p>
+                работать с {{ company_tarif.max_menu }} блюдами </p>
+            <p class="text-gray-700">Для увеличения количества блюд в меню, необходимо приобрести расширение тарифа.</p>
         </div>
         <div class="pl-5 pr-5 relative">
             <p class="text-4xl font-bold">Меню {{ this.menu_data.company_detail }}</p>

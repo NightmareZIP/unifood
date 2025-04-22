@@ -100,7 +100,7 @@ const routes = [
   },
 
   {
-    path: '/profile',
+    path: '/workers/:id',
     name: 'profile',
     meta: { requiresAuth: true },
 

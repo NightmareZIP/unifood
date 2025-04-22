@@ -83,12 +83,14 @@ class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
         read_only_fields = (
+            "id",
             "created_at",
             # "head",
             "company",
             "user_id",
         ) 
         fields = (
+            "id",
             "name",
             "last_name",
             "surname",

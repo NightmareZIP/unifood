@@ -7,7 +7,7 @@
             :link="'/register/' + company_id" />
 
         <ProfileMenuCard headText="Ваши учетные данные"
-            bodyText="Просмотр и редактирование данных вашего профиля пользователя" link="profile" />
+            bodyText="Просмотр и редактирование данных вашего профиля пользователя" :link="'/workers/' + id" />
         <ProfileMenuCard headText="Ифнормация о тарифе" bodyText="Просмотр данных о вашем тарифе" link="tarifs" />
         <ProfileMenuCard headText="Сотрудники" bodyText="Список ваших сотрудников" link="workers" />
 
@@ -27,6 +27,7 @@ export default {
     data() {
         return {
             company_id: '0',
+            id: '0',
         }
     },
     created() {
@@ -38,6 +39,7 @@ export default {
                 .get("/api/v1/workers/0")
                 .then(response => {
                     this.company_id = response.data.company.id
+                    this.id = response.data.id
                 })
                 .catch(error => {
                     console.log(error)
